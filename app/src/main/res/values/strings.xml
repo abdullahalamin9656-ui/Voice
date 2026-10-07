@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="app_name">Voice Assistant</string>
+
+    <string name="accessibility_description">
+        Allows legitimate navigation, scrolling and gesture commands requested by the user.
+    </string>
+
+</resources>
