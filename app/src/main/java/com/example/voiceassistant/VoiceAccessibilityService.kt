@@ -8,76 +8,83 @@ import android.view.accessibility.AccessibilityEvent
 class VoiceAccessibilityService : AccessibilityService() {
 
     companion object {
-
         var instance: VoiceAccessibilityService? = null
             private set
     }
 
     override fun onServiceConnected() {
-
         super.onServiceConnected()
-
         instance = this
     }
 
     override fun onAccessibilityEvent(
         event: AccessibilityEvent?
     ) {
-        // প্রয়োজন হলে এখানে UI/event monitoring যোগ করা যাবে।
+        // এখানে প্রয়োজনীয় accessibility event পাওয়া যাবে।
     }
 
     override fun onInterrupt() {
-        // Accessibility interrupted.
+        // Service interrupted.
     }
 
     override fun onDestroy() {
-
         instance = null
-
         super.onDestroy()
+    }
+
+    fun goBack(): Boolean {
+        return performGlobalAction(
+            GLOBAL_ACTION_BACK
+        )
+    }
+
+    fun goHome(): Boolean {
+        return performGlobalAction(
+            GLOBAL_ACTION_HOME
+        )
+    }
+
+    fun openRecents(): Boolean {
+        return performGlobalAction(
+            GLOBAL_ACTION_RECENTS
+        )
     }
 
     fun swipeUp() {
 
-        val displayMetrics = resources.displayMetrics
+        val metrics = resources.displayMetrics
 
-        val width = displayMetrics.widthPixels.toFloat()
-        val height = displayMetrics.heightPixels.toFloat()
+        val width = metrics.widthPixels.toFloat()
+        val height = metrics.heightPixels.toFloat()
 
         val x = width / 2f
 
-        val startY = height * 0.75f
-        val endY = height * 0.25f
-
-        performSwipe(
+        swipe(
             x,
-            startY,
+            height * 0.78f,
             x,
-            endY
+            height * 0.22f
         )
     }
 
     fun swipeDown() {
 
-        val displayMetrics = resources.displayMetrics
+        val metrics = resources.displayMetrics
 
-        val width = displayMetrics.widthPixels.toFloat()
-        val height = displayMetrics.heightPixels.toFloat()
+        val width = metrics.widthPixels.toFloat()
+        val height = metrics.heightPixels.toFloat()
 
         val x = width / 2f
 
-        val startY = height * 0.25f
-        val endY = height * 0.75f
-
-        performSwipe(
+        swipe(
             x,
-            startY,
+            height * 0.22f,
             x,
-            endY
+            height * 0.78f
         )
     }
 
-    private fun performSwipe(
+    private fun swipe(
         startX: Float,
         startY: Float,
         endX: Float,
@@ -86,18 +93,26 @@ class VoiceAccessibilityService : AccessibilityService() {
 
         val path = Path()
 
-        path.moveTo(startX, startY)
-        path.lineTo(endX, endY)
+        path.moveTo(
+            startX,
+            startY
+        )
+
+        path.lineTo(
+            endX,
+            endY
+        )
+
+        val stroke =
+            GestureDescription.StrokeDescription(
+                path,
+                0,
+                450
+            )
 
         val gesture =
             GestureDescription.Builder()
-                .addStroke(
-                    GestureDescription.StrokeDescription(
-                        path,
-                        0,
-                        400
-                    )
-                )
+                .addStroke(stroke)
                 .build()
 
         dispatchGesture(
